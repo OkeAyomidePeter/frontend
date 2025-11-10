@@ -30,7 +30,19 @@ export function Home() {
         const profiles = await getProfiles();
         if (!isMounted) return;
         if (profiles.length > 0) {
-          setProfileData(profiles[0]);
+          const rawProfile = profiles[0];
+          setProfileData({
+            ...defaultProfile,
+            ...rawProfile,
+            stacks: Array.isArray(rawProfile.stacks)
+              ? rawProfile.stacks.map((stack: any) => ({
+                  name: typeof stack?.name === "string" ? stack.name : "",
+                  technologies: Array.isArray(stack?.technologies)
+                    ? stack.technologies.map((tech: unknown) => String(tech))
+                    : [],
+                }))
+              : [],
+          });
         }
       } catch (error) {
         console.error("Failed to load home profile", error);
